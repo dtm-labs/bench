@@ -6,7 +6,6 @@ import (
 	"github.com/gogf/gf/util/gconv"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type SoMaster struct {
@@ -38,7 +37,7 @@ type SoMaster struct {
 	SoItems []*SoItem `gorm:"-"`
 }
 
-func (*SoMaster) TableName() string { return "so_master" }
+func (*SoMaster) TableName() string { return "dtm_bench.so_master" }
 
 type SoItem struct {
 	Sysno         int64   `json:"sysNo"`
@@ -51,7 +50,7 @@ type SoItem struct {
 	Quantity      int32   `json:"quantity"`
 }
 
-func (*SoItem) TableName() string { return "so_item" }
+func (*SoItem) TableName() string { return "dtm_bench.so_item" }
 
 type Inventory struct {
 	Sysno           uint64
@@ -62,7 +61,7 @@ type Inventory struct {
 	AdjustLockedQty int32
 }
 
-func (*Inventory) TableName() string { return "inventory" }
+func (*Inventory) TableName() string { return "dtm_bench.inventory" }
 
 func NextID() uint64 {
 	id, _ := uuid.NewUUID()
@@ -71,8 +70,6 @@ func NextID() uint64 {
 
 func CreateSO(db *gorm.DB, soMasters []*SoMaster) {
 	result := make([]uint64, 0, len(soMasters))
-	tx := db.Begin()
-	E2P(tx.Error)
 	for _, soMaster := range soMasters {
 		soid := NextID()
 		so_master := &SoMaster{
@@ -93,7 +90,7 @@ func CreateSO(db *gorm.DB, soMasters []*SoMaster) {
 			Appid:                soMaster.Appid,
 			Memo:                 soMaster.Memo,
 		}
-		err := tx.Omit(clause.Associations).Create(so_master).Error
+		err := db.Create(so_master).Error
 
 		E2P(err)
 
@@ -110,13 +107,11 @@ func CreateSO(db *gorm.DB, soMasters []*SoMaster) {
 				DealPrice:     soItem.DealPrice,
 				Quantity:      soItem.Quantity,
 			}
-			err := tx.Create(so_item).Error
+			err := db.Create(so_item).Error
 			E2P(err)
 		}
 		result = append(result, soid)
 	}
-	err := tx.Commit().Error
-	E2P(err)
 }
 
 type AllocateInventoryReq struct {
@@ -125,11 +120,9 @@ type AllocateInventoryReq struct {
 }
 
 func AllocateInventory(db *gorm.DB, reqs []*AllocateInventoryReq) {
-	tx := db.Begin()
-	E2P(tx.Error)
 
 	for _, req := range reqs {
-		err := tx.Model(&Inventory{}).
+		err := db.Model(&Inventory{}).
 			Where("product_sysno = ? and available_qty >= ?", req.ProductSysNo, req.Qty).
 			UpdateColumns(map[string]interface{}{
 				"available_qty": gorm.Expr("available_qty - ?", req.Qty),
@@ -137,6 +130,4 @@ func AllocateInventory(db *gorm.DB, reqs []*AllocateInventoryReq) {
 			}).Error
 		E2P(err)
 	}
-	err := tx.Commit().Error
-	E2P(err)
 }

@@ -1,6 +1,7 @@
 package svr
 
 import (
+	"fmt"
 	"sync"
 
 	"gorm.io/driver/mysql"
@@ -13,7 +14,9 @@ var db *gorm.DB
 func dbGet() *gorm.DB {
 	var err error
 	dbOnce.Do(func() {
-		db, err = gorm.Open(mysql.Open("root:@tcp(localhost:3306)/dtm_bench?charset=utf8mb4&parseTime=true&loc=Local&interpolateParams=true"), &gorm.Config{
+		dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=true&loc=Local&interpolateParams=true",
+			DbConf.User, DbConf.Password, DbConf.Host, DbConf.Port, "")
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 			SkipDefaultTransaction: true,
 		})
 		E2P(err)

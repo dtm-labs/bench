@@ -34,7 +34,12 @@ cd bench/xaat && go run main.go
 `ab -t 5 -c 3 localhost:8080/api/benchSuccess`
 
 #### 结果
-`Requests per second:    152.87 [#/sec] (mean)`
+`Requests per second:    9.42 [#/sec] (mean)`
+
+#### 关闭日志后压测
+因为日志输出到控制台会占用大量的性能，因此为了实测性能，需要将日志关闭或者重定向到nul设备。关闭dtm和bench之后的压测结果为：
+
+`Requests per second:    16.42 [#/sec] (mean)`
 
 ## seata-golang 测试步骤
 
@@ -46,6 +51,11 @@ cd bench/xaat && go run main.go
 
 #### 结果
 `Requests per second:    9.24 [#/sec] (mean)`
+
+#### 关闭日志之后的结果为
+将seata-golang所有相关的日志全部重定向到nul设备后，压测的结果为：
+
+`Requests per second:    13.38 [#/sec] (mean)`
 
 ## 性能分析
 详细原理以及性能分析参考 [AT模式](https://dtm.pub/practice/at)
