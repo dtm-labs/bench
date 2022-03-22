@@ -1,3 +1,4 @@
+简体中文 | [English](./README.md)
 # XA AT 对比测试
 本测试主要用于对比dtm实现的XA和seata-golang实现的AT性能
 
