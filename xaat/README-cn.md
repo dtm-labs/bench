@@ -20,10 +20,12 @@ Mysql: Docker安装的Mysql5.7
 
 #### 启动dtm
 
-`
+``` bash
 git clone https://github.com/dtm-labs/dtm && cd dtm
-go run main.go
-`
+# 连接上述的mysql，执行dtm中sqls下的barrier和storage
+# 配置dtm使用mysql引擎
+go run main.go -c conf.yml
+```
 
 #### 启动压测服务
 `

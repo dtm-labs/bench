@@ -3,7 +3,7 @@ module github.com/dtm-labs/bench
 go 1.17
 
 require (
-	github.com/dtm-labs/dtmcli v1.12.3
+	github.com/dtm-labs/dtmcli v1.13.0
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/gogf/gf v1.16.6

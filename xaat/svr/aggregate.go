@@ -37,7 +37,7 @@ var soMasters = []SoMaster{
 func addAggregateRoutes(app *gin.Engine) {
 	app.GET("/api/benchSuccess", func(c *gin.Context) {
 		gid := shortuuid.New()
-		err := XaClient.XaGlobalTransaction(gid, func(xa *dtmcli.Xa) (*resty.Response, error) {
+		err := dtmcli.XaGlobalTransaction(DtmServer, gid, func(xa *dtmcli.Xa) (*resty.Response, error) {
 			_, err := xa.CallBranch(soMasters, SvrUrl+"/api/createOrder")
 			E2P(err)
 			_, err = xa.CallBranch([]AllocateInventoryReq{{

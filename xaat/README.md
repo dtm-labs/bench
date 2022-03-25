@@ -20,10 +20,12 @@ After connecting to mysql, execute `bench.sql` in the current directory
 
 #### Start dtm
 
-`
+``` bash
 git clone https://github.com/dtm-labs/dtm && cd dtm
-go run main.go
-`
+# connect to mysql，and execute barrier, storage sqls under dtm
+# config dtm to use mysql storage
+go run main.go -c conf.yml
+```
 
 #### Start the performance test service
 `

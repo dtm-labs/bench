@@ -48,26 +48,12 @@ func GetGinApp() *gin.Engine {
 	return app
 }
 
-var XaClient *dtmcli.XaClient
-
 func Main() {
 	logger.Infof("starting bench server")
 	app := GetGinApp()
 	addOrderRoutes(app)
 	addProductRoutes(app)
 	addAggregateRoutes(app)
-	var err error
-	XaClient, err = dtmcli.NewXaClient(DtmServer, *DbConf, SvrUrl+"/api/xa", func(path string, xa *dtmcli.XaClient) {
-		app.POST(path, func(c *gin.Context) {
-			r := xa.HandleCallback(c.Query("gid"), c.Query("branch_id"), c.Query("op"))
-			if err, ok := r.(error); ok {
-				c.JSON(500, gin.H{"error": err.Error()})
-			} else {
-				c.JSON(200, r)
-			}
-		})
-	})
-	logger.FatalIfError(err)
 	logger.Infof("listening on %s", ":8080")
 	logger.InitLog("debug")
 	app.Run(":8080")

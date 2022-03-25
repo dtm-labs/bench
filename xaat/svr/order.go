@@ -11,10 +11,10 @@ import (
 
 func addOrderRoutes(app *gin.Engine) {
 	app.POST("/api/createOrder", func(c *gin.Context) {
-		var order []*SoMaster
-		err := c.BindJSON(&order)
-		E2P(err)
-		err = XaClient.XaLocalTransaction(c.Request.URL.Query(), func(db *sql.DB, xa *dtmcli.Xa) error {
+		err := dtmcli.XaLocalTransaction(c.Request.URL.Query(), *DbConf, func(db *sql.DB, xa *dtmcli.Xa) error {
+			var order []*SoMaster
+			err := c.BindJSON(&order)
+			E2P(err)
 			gdb, err := gorm.Open(mysql.New(mysql.Config{
 				Conn: db,
 			}), &gorm.Config{SkipDefaultTransaction: true})
